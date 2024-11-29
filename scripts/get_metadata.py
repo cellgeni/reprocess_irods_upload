@@ -135,8 +135,8 @@ def write_meta(
         sep (str, optional): a separator used to write metadata files. Defaults to '\t'.
     """
     for sample_meta in meta:
-        # get sample name
-        sample = sample_meta["sample"]
+        # get sample accession number
+        sample_accession_number = sample_meta["sample_accession_number"]
         # filter redundunt keys, change key names if neccessary and convert keys to lower case
         filtered_meta = {
             key_convert.get(key, key).lower(): value
@@ -150,7 +150,7 @@ def write_meta(
             for val in (values if isinstance(values, list) else [values])
         ]
         # get a filepath to metadata
-        filepath = os.path.join(output_dir, f"{sample}.tsv")
+        filepath = os.path.join(output_dir, f"{sample_accession_number}.tsv")
         # write metadata
         with open(filepath, "w") as file:
             file.writelines(lines)
@@ -175,7 +175,7 @@ def main():
 
     # concatenate dicts
     meta = [
-        dict(accessions_meta[key], **solo_qc_meta[key])
+        dict(sample_accession_number=key, **accessions_meta[key], **solo_qc_meta[key])
         for key in solo_qc_meta.keys()
     ]
 
