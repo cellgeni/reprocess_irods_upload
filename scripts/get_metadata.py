@@ -57,7 +57,11 @@ def accessions_row_to_meta(row: str) -> Dict[str, List]:
     Returns:
         Dict[str, List]: a list of experiments and runs is saved to the Dict
     """
-    sample_dict = {"experiment": row[2].split(","), "run": row[3].split(",")}
+    sample_dict = {
+        "sample": row[1],
+        "experiment": row[2].split(","),
+        "run": row[3].split(","),
+    }
     return sample_dict
 
 
@@ -88,7 +92,10 @@ def get_accessions_meta(accessions_file: str, sep="\t") -> Dict[str, Dict]:
         # split line and remove \n
         lines = [line.rstrip().split(sep) for line in file.readlines()]
         # convert to Dict[sample, meta]
-        samples = {line[1]: accessions_row_to_meta(line) for line in lines}
+        samples = {
+            (line[1] if line[0] == "-" else line[0]): accessions_row_to_meta(line)
+            for line in lines
+        }
     return samples
 
 
@@ -116,7 +123,7 @@ def write_meta(
     output_dir: str,
     target_keys: List[str],
     key_convert: Dict[str, str],
-    sep='\t'
+    sep="\t",
 ) -> None:
     """
     Writes metadata from `meta` list to separate files
@@ -168,7 +175,7 @@ def main():
 
     # concatenate dicts
     meta = [
-        dict(sample=key, **accessions_meta[key], **solo_qc_meta[key])
+        dict(accessions_meta[key], **solo_qc_meta[key])
         for key in solo_qc_meta.keys()
     ]
 
