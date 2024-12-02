@@ -16,6 +16,8 @@ TARGET_KEYS = [
     "Strand",
 ]
 
+SPECIES_CONVERT = {"Human": "Homo sapiens", "Mouse": "Mus musculus"}
+
 KEY_CONVERT = {"Rd_all": "total_reads", "WL": "whitelist"}
 
 
@@ -86,7 +88,7 @@ def get_accessions_meta(accessions_file: str, sep="\t") -> Dict[str, Dict]:
         sep (str, optional): separator used to split accessions.tsv file. Defaults to '\t'.
 
     Returns:
-        Dict[str, Dict: a dict with metadata from rows of accessions.tsv file
+        Dict[str, Dict]: a dict with metadata from rows of accessions.tsv file
     """
     with open(accessions_file, "r") as file:
         # split line and remove \n
@@ -143,6 +145,10 @@ def write_meta(
             for key, value in sample_meta.items()
             if key in target_keys
         }
+        # convert species names
+        filtered_meta["species"] = SPECIES_CONVERT.get(
+            filtered_meta["species"], filtered_meta["species"]
+        )
         # convert dict into lines (if there are several values for the same key then several lines are created)
         lines = [
             f"{key}{sep}{val}\n"
