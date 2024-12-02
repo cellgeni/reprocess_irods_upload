@@ -38,5 +38,5 @@ do
     # Load file to the IRODS
     irods_dir=$(dirname "$irods_path")
     imkdir -p "$irods_dir"
-    iput -K --metadata="study_accession_number;${dataset};;md5;${md5};;" "$file" "$irods_path"
+    iput -K -N 0 -f --metadata="series;${dataset};;md5;${md5};;" "$file" "$irods_path"
 done < <(find "$SOURCE_DIR" -type f)

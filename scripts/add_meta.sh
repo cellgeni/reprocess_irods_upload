@@ -5,7 +5,7 @@ set -e
 
 # Ensure correct number of arguments
 if [ "$#" -ne 2 ]; then
-  echo "Usage: $0 <source_directory> <irods_target_directory>"
+  echo "Usage: $0 <metadata_directory> <irods_target_directory>"
   exit 1
 fi
 
@@ -16,7 +16,7 @@ IRODS_TARGET_DIR="${2%/}"
 # Get dataset name and add it to meta
 dataset=$(basename $IRODS_TARGET_DIR)
 echo "Adding metadata to iRODS collection: $IRODS_TARGET_DIR"
-imeta set -C "$IRODS_TARGET_DIR" "accession number" "$dataset"
+imeta set -C "$IRODS_TARGET_DIR" "study_accession_number" "$dataset"
 
 # Iterate over all files matching the pattern 'sample.tsv'
 for file in "$SOURCE_DIR"/*.tsv; do
@@ -31,8 +31,7 @@ for file in "$SOURCE_DIR"/*.tsv; do
 
     # Add basic metadata
     echo "Adding metadata to iRODS collection: $irods_collection"
-    imeta set -C "$irods_collection" "accession number" "$dataset"
-    imeta set -C "$irods_collection" "sample_accession_number number" "$sample_accession_number"
+    imeta set -C "$irods_collection" "series" "$dataset"
 
     # Read each line from the file
     while IFS=$'\t' read -r key value; do
