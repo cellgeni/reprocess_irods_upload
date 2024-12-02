@@ -6,6 +6,7 @@ import argparse
 
 # GLOBAL VARIABLES
 TARGET_KEYS = [
+    "geo_sample",
     "sample",
     "experiment",
     "run",
@@ -60,6 +61,7 @@ def accessions_row_to_meta(row: str) -> Dict[str, List]:
         Dict[str, List]: a list of experiments and runs is saved to the Dict
     """
     sample_dict = {
+        "geo_sample": row[0],
         "sample": row[1],
         "experiment": row[2].split(","),
         "run": row[3].split(","),
@@ -138,7 +140,7 @@ def write_meta(
     """
     for sample_meta in meta:
         # get sample accession number
-        sample_accession_number = sample_meta["sample_accession_number"]
+        dirname = sample_meta["dirname"]
         # filter redundunt keys, change key names if neccessary and convert keys to lower case
         filtered_meta = {
             key_convert.get(key, key).lower(): value
@@ -156,7 +158,7 @@ def write_meta(
             for val in (values if isinstance(values, list) else [values])
         ]
         # get a filepath to metadata
-        filepath = os.path.join(output_dir, f"{sample_accession_number}.tsv")
+        filepath = os.path.join(output_dir, f"{dirname}.tsv")
         # write metadata
         with open(filepath, "w") as file:
             file.writelines(lines)
@@ -181,7 +183,7 @@ def main():
 
     # concatenate dicts
     meta = [
-        dict(sample_accession_number=key, **accessions_meta[key], **solo_qc_meta[key])
+        dict(dirname=key, **accessions_meta[key], **solo_qc_meta[key])
         for key in solo_qc_meta.keys()
     ]
 
