@@ -1,5 +1,5 @@
 #BSUB -G cellgeni
-#BSUB -q "normal"
+#BSUB -q "transfer"
 #BSUB -n 1
 #BSUB -M 4GB
 #BSUB -R "select[mem>4GB] rusage[mem=4GB]"
@@ -14,25 +14,10 @@ set -e
 SOURCE_DIR="${SOURCE%/}"
 IRODS_TARGET_DIR="${TARGET%/}"
 
-# Set script PATHS
-get_meta_script=/lustre/scratch127/cellgen/cellgeni/aljes/reprocess/scripts/get_metadata.py
-transfer_script=/lustre/scratch127/cellgen/cellgeni/aljes/reprocess/scripts/transfer_to_irods.sh
-add_meta_script=/lustre/scratch127/cellgen/cellgeni/aljes/reprocess/scripts/add_meta.sh
-
-# Set output dir
-outputdir=metadata
 dataset=$(basename "$SOURCE_DIR")
 
-# Get metadata
-echo "Step1. Getting metadata ..."
-$get_meta_script --outputdir "${outputdir}/${dataset}" $SOURCE_DIR 
+# Set script PATHS
+script=/lustre/scratch127/cellgen/cellgeni/aljes/reprocess/scripts/transfer_with_meta.sh
 
-# Load Dataset to IRODS
-echo "Step2. Loading data to $IRODS_TARGET_DIR/$dataset on IRODS..."
-$transfer_script "$SOURCE_DIR" "$IRODS_TARGET_DIR"
-
-# Add metadata
-echo "Step3. Adding metadata..."
-$add_meta_script "${outputdir}/${dataset}" "${IRODS_TARGET_DIR}/${dataset}"
-
-echo "$SOURCE_DIR" >> success.txt
+# Run script
+$script "$SOURCE_DIR" "$IRODS_TARGET_DIR"

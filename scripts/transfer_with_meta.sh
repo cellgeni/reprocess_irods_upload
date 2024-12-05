@@ -24,7 +24,7 @@ dataset=$(basename "$SOURCE_DIR")
 
 # Get metadata
 echo "Step1. Getting metadata ..."
-$get_meta_script --outputdir "${outputdir}/${dataset}" $SOURCE_DIR 
+$get_meta_script --outputdir "${outputdir}" $SOURCE_DIR 
 
 # Load Dataset to IRODS
 echo "Step2. Loading data to $IRODS_TARGET_DIR/$dataset on IRODS..."
@@ -32,4 +32,4 @@ $transfer_script "$SOURCE_DIR" "$IRODS_TARGET_DIR"
 
 # Add metadata
 echo "Step3. Adding metadata..."
-$add_meta_script "${outputdir}/${dataset}" "${IRODS_TARGET_DIR}/${dataset}"
+$add_meta_script "${outputdir}" "${IRODS_TARGET_DIR}/${dataset}"
