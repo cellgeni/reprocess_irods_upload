@@ -44,7 +44,7 @@ do
         # Load file to the IRODS
         irods_dir=$(dirname "$irods_path")
         imkdir -p "$irods_dir"
-        iput -K -N 0 -f -X $dataset.restart.txt --retries 5 --metadata="series;${dataset};;md5;${md5};;" "$file" "$irods_path" > /dev/null
+        iput -K -N 0 -f -X $dataset.restart.txt --retries 10 --metadata="series;${dataset};;md5;${md5};;" "$file" "$irods_path" > /dev/null
 
         # Write details to tracking file
         echo -e "$dataset\t$file\t$irods_path\t$md5" >> "$TRACKING_FILE"
