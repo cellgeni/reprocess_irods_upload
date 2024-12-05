@@ -1,7 +1,14 @@
 #!/bin/bash
 
+# Ensure correct number of arguments
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <datasetlist>"
+    exit 1
+fi
+
+
 target=/archive/cellgeni/datasets
-dataset_list=/lustre/scratch127/cellgen/cellgeni/aljes/reprocess/to_load_list0.txt
+dataset_list=$1
 
 workdir=/lustre/scratch127/cellgen/cellgeni/aljes/reprocess/transfer
 bsub_script=/lustre/scratch127/cellgen/cellgeni/aljes/reprocess/scripts/transfer_with_meta.bsub 
