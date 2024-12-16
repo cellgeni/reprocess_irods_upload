@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-INPUT_FILE=/lustre/scratch127/cellgen/cellgeni/aljes/reprocess/v1.todo_head100.tsv
+INPUT_FILE=$1
 SCRIPT=/lustre/scratch127/cellgen/cellgeni/aljes/reprocess/scripts/reprocess.bsub
 : > finished.tsv
 
