@@ -1,7 +1,7 @@
 #!/bin/bash
 
 pattern="Successfully completed."
-directory=/lustre/scratch127/cellgen/cellgeni/aljes/reprocess/transfer
+directory=$1
 
 total_logs=$(find $directory -type f -name "output*.log" | wc -l)
 successful_logs=$(find $directory -type f -name "output*.log" -exec grep -q "$pattern" {} \; -print | wc -l)
