@@ -1,9 +1,14 @@
 #!/bin/bash
 
+# Check if the right number of arguments is passed
+if [[ -z "$1" ]]; then
+    echo "Usage: $0 <good_datasets_list>"
+    exit 1
+fi
+
 # Define paths
-source_dir="/lustre/scratch127/cellgen/cellgeni/reprocessing-datasets-project"
-target_dir="/lustre/scratch127/cellgen/cellgeni/reprocessing-datasets-project/irods/"
-good_dirs_list="/lustre/scratch127/cellgen/cellgeni/aljes/reprocess/results/main_dir_validation.txt"
+good_dirs_list=$1
+target_dir="/lustre/scratch127/cellgen/cellgeni/reprocessing-datasets-project/irods"
 
 # Create the target directory if it doesn't exist
 mkdir -p "$target_dir"
