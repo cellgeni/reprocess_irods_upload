@@ -10,7 +10,9 @@ LOGDIR=$1
 
 # Output file
 output_file="job_summary.tsv"
+completed_list=completed_list.txt
 echo -e "DATASET\tCOMPLETED\tSTART_TIME\tTERMINATE_TIME\tLOG_PATH" > "$output_file"
+: > "$completed_list"
 
 # Loop through output*.log files
 for output_log in $LOGDIR/output*.log; do
@@ -32,6 +34,11 @@ for output_log in $LOGDIR/output*.log; do
     if [[ -f "$error_log" ]]; then
         # Extract dataset name from error log
         dataset=$(grep -oP "Using file \K[^ ]*_subset\.txt" "$error_log" | sed 's/_subset\.txt//')
+        if [[ -n $start_time && -d "$LOGDIR/$dataset" ]]; then
+            echo "Copying logs to $dataset folder"
+            cp $output_log $error_log "$LOGDIR/$dataset"
+            echo "$LOGDIR/$dataset" >> "$completed_list"
+        fi
     else
         dataset="Unknown"
     fi
@@ -40,4 +47,4 @@ for output_log in $LOGDIR/output*.log; do
     echo -e "${dataset}\t${completed}\t${start_time}\t${terminate_time}\t${output_log}" >> "$output_file"
 done
 
-echo "Parsing complete. Results written to $output_file."
+echo "Parsing complete. Results written to $output_file. Completed list is in $completed_list"
