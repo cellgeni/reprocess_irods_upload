@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import os
+import sys
+import glob
 import argparse
 import pandas as pd
 from itertools import chain
@@ -61,13 +63,19 @@ def init_parser() -> argparse.ArgumentParser:
     Initialise argument parser for the script
     """
     parser = argparse.ArgumentParser(
-        description="Creates cisTopic object from fragments, consensus peaks and quality control files"
+        description="Validates a set of reprocessed datasets"
     )
     parser.add_argument(
-        "source",
+        "--source",
         metavar="<dir>",
         type=str,
         help="Specify a path where reprocessed datasets are stored",
+    )
+    parser.add_argument(
+        "--dirlist",
+        metavar="<file>",
+        type=str,
+        help="Specify a path to the list of datasets to validate",
     )
     parser.add_argument(
         "--checklist_file",
@@ -93,6 +101,14 @@ def init_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def get_datasets(args):
+    if args.dirlist:
+        with open(args.dirlist, 'r') as file:
+            dataset_paths = [path.rstrip() for path in file.readlines()]
+        return dataset_paths
+    return glob.glob(f"{args.source.rstrip('/')}/*")
+
+
 def validate_checklist_values(func):
     @wraps(func)
     def wrapper(checklist, *args, **kwargs):
@@ -105,15 +121,15 @@ def validate_checklist_values(func):
     return wrapper
 
 
-def check_if_dataset(basedir, dataset):
-    dataset_path = os.path.join(basedir, dataset)
+def check_if_dataset(dataset_path):
+    dataset_name = os.path.basename(dataset_path)
     is_dataset_name = (
         lambda dataset_name: ("GSE" in dataset_name)
         or ("E-MTAB" in dataset_name)
         or ("PRJNA" in dataset_name)
         or ("SDY" in dataset_name)
     )
-    return is_dataset_name(dataset) and os.path.isdir(dataset_path)
+    return is_dataset_name(dataset_name) and os.path.isdir(dataset_path)
 
 
 def make_full_path(basedir, dataset, filename):
@@ -320,15 +336,16 @@ def validate_solo_qc(checklist, basedir, dataset, sample_to_runs):
 
 
 def validate_basedir(
-    basedir, checklist_columns, metafile_suffixes, db_metafile_suffixes
+    dataset_paths, checklist_columns, metafile_suffixes, db_metafile_suffixes
 ):
     # get valid dataset names
-    datasets = [
-        dataset for dataset in os.listdir(basedir) if check_if_dataset(basedir, dataset)
+    dataset_paths = [
+        dataset_path for dataset_path in dataset_paths if check_if_dataset(dataset_path)
     ]
 
     checklist_dict = dict()
-    for dataset in datasets:
+    for dataset_path in dataset_paths:
+        dataset, basedir = os.path.basename(dataset_path), os.path.dirname(dataset_path)
         checklist = {col: None for col in checklist_columns}
 
         # check that all metadata files exist
@@ -365,14 +382,19 @@ def main():
     # parse script arguments
     parser = init_parser()
     args = parser.parse_args()
+    
+    # check if at least one argument is specified
+    if args.source is None and args.dirlist is None:
+        parser.print_help()
+        sys.exit()
 
-    # get source dir path and dataset name
-    source_dir = args.source.rstrip("/")
+    # get dataset paths
+    dataset_paths = get_datasets(args)
 
     # validate directories
     checklist_columns = INFORMATIVE_COLUMNS + ADDITIONAL_COLUMNS
     checklist_df = validate_basedir(
-        source_dir, checklist_columns, METAFILE_SUFFIXES, DB_METAFILE_SUFFIXES
+        dataset_paths, checklist_columns, METAFILE_SUFFIXES, DB_METAFILE_SUFFIXES
     )
 
     # get a list of datasets that passed the QC
