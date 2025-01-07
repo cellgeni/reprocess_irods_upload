@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Ensure correct number of arguments
-if [ "$#" -ne 1 ]; then
+if [ "$#" -ne 2 ]; then
     echo "Usage: $0 <datasetlist> <transfer>"
     exit 1
 fi
