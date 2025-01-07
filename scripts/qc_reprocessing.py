@@ -92,6 +92,13 @@ def init_parser() -> argparse.ArgumentParser:
         default="passlist.txt",
     )
     parser.add_argument(
+        "--fail_file",
+        metavar="<file>",
+        type=str,
+        help="Specify a name for the file with a list of datasets that failed validation. Default: faillist.txt",
+        default="faillist.txt",
+    )
+    parser.add_argument(
         "--sep",
         metavar="<val>",
         type=str,
@@ -99,14 +106,6 @@ def init_parser() -> argparse.ArgumentParser:
         default="\t",
     )
     return parser
-
-
-def get_datasets(args):
-    if args.dirlist:
-        with open(args.dirlist, 'r') as file:
-            dataset_paths = [path.rstrip() for path in file.readlines()]
-        return dataset_paths
-    return glob.glob(f"{args.source.rstrip('/')}/*")
 
 
 def validate_checklist_values(func):
@@ -130,6 +129,21 @@ def check_if_dataset(dataset_path):
         or ("SDY" in dataset_name)
     )
     return is_dataset_name(dataset_name) and os.path.isdir(dataset_path)
+
+
+def get_datasets(args):
+    if args.dirlist:
+        with open(args.dirlist, "r") as file:
+            dataset_paths = [path.rstrip() for path in file.readlines()]
+    else:
+        dataset_paths = glob.glob(f"{args.source.rstrip('/')}/*")
+        # get valid dataset names
+        dataset_paths = [
+            dataset_path
+            for dataset_path in dataset_paths
+            if check_if_dataset(dataset_path)
+        ]
+    return dataset_paths
 
 
 def make_full_path(basedir, dataset, filename):
@@ -338,11 +352,6 @@ def validate_solo_qc(checklist, basedir, dataset, sample_to_runs):
 def validate_basedir(
     dataset_paths, checklist_columns, metafile_suffixes, db_metafile_suffixes
 ):
-    # get valid dataset names
-    dataset_paths = [
-        dataset_path for dataset_path in dataset_paths if check_if_dataset(dataset_path)
-    ]
-
     checklist_dict = dict()
     for dataset_path in dataset_paths:
         dataset, basedir = os.path.basename(dataset_path), os.path.dirname(dataset_path)
@@ -382,7 +391,7 @@ def main():
     # parse script arguments
     parser = init_parser()
     args = parser.parse_args()
-    
+
     # check if at least one argument is specified
     if args.source is None and args.dirlist is None:
         parser.print_help()
@@ -390,6 +399,9 @@ def main():
 
     # get dataset paths
     dataset_paths = get_datasets(args)
+    dataset_path_dict = {
+        os.path.basename(dataset_path): dataset_path for dataset_path in dataset_paths
+    }
 
     # validate directories
     checklist_columns = INFORMATIVE_COLUMNS + ADDITIONAL_COLUMNS
@@ -397,20 +409,29 @@ def main():
         dataset_paths, checklist_columns, METAFILE_SUFFIXES, DB_METAFILE_SUFFIXES
     )
 
-    # get a list of datasets that passed the QC
+    # get a list of datasets that passed and failed the QC
     pass_list = checklist_df[
         checklist_df[MUST_BE_TRUE_COLUMNS].all(axis=1)
     ].index.tolist()
-    print(f"PASS: {len(pass_list)}, ALL: {checklist_df.shape[0]}")
+    fail_list = checklist_df.index.difference(pass_list).tolist()
+    print(
+        f"PASS: {len(pass_list)}, FAIL: {len(fail_list)}, ALL: {checklist_df.shape[0]}"
+    )
 
     # write validation results to file
-    with pd.option_context('future.no_silent_downcasting', True):
-        checklist_df = checklist_df.fillna('-').infer_objects()
+    with pd.option_context("future.no_silent_downcasting", True):
+        checklist_df = checklist_df.fillna("-").infer_objects()
     checklist_df.to_csv(args.checklist_file, sep=args.sep)
 
     # write a list of passed datasets to the file
     with open(args.pass_file, "w") as passfile:
-        passfile.write('\n'.join(pass_list))
+        pass_list = [dataset_path_dict[dataset] for dataset in pass_list]
+        passfile.write("\n".join(pass_list))
+
+    # write a list of failed datasets to the file
+    with open(args.fail_file, "w") as failfile:
+        fail_list = [dataset_path_dict[dataset] for dataset in fail_list]
+        failfile.write("\n".join(fail_list))
 
 
 if __name__ == "__main__":
