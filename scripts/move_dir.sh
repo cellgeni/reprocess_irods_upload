@@ -14,21 +14,21 @@ target_dir="/lustre/scratch127/cellgen/cellgeni/reprocessing-datasets-project/ir
 mkdir -p "$target_dir"
 
 # Read each directory from the list and move it
-while IFS= read -r subdir; do
+while IFS= read -r dataset_path; do
     # Construct the full source path and target path
-    full_path="$source_dir/$subdir"
-    target_path="$target_dir/$subdir"
+    dataset=$(basename $dataset_path)
+    target_path="$target_dir/$dataset"
     
     # Check if the directory exists in the source and not already in the target
-    if [ -d "$full_path" ]; then
+    if [ -d "$dataset_path" ]; then
         if [ ! -d "$target_path" ]; then
-            mv "$full_path" "$target_dir"
-            echo "Moved: $subdir"
+            mv "$dataset_path" "$target_dir"
+            echo "Moved: $dataset"
         else
-            echo "Directory already exists in target: $subdir"
-            echo "$full_path" >> duplicated.txt
+            echo "Directory already exists in target: $dataset"
+            echo "$dataset_path" >> duplicated.txt
         fi
     else
-        echo "Directory not found in source: $subdir"
+        echo "Directory not found in source: $dataset"
     fi
 done < "$good_dirs_list"
