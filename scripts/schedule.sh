@@ -2,7 +2,7 @@
 
 # Ensure correct number of arguments
 if [ "$#" -ne 1 ]; then
-    echo "Usage: $0 <datasetlist>"
+    echo "Usage: $0 <datasetlist> <transfer>"
     exit 1
 fi
 
@@ -10,7 +10,7 @@ fi
 target=/archive/cellgeni/datasets
 dataset_list=$1
 
-workdir=/lustre/scratch127/cellgen/cellgeni/aljes/reprocess/transfer
+workdir=$2
 bsub_script=/lustre/scratch127/cellgen/cellgeni/aljes/reprocess/scripts/transfer_with_meta.bsub 
 
 while read -r source
