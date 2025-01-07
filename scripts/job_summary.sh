@@ -9,9 +9,10 @@ fi
 LOGDIR=$1
 
 # Output file
-output_file="job_summary.tsv"
-completed_list=completed_list.txt
-echo -e "DATASET\tCOMPLETED\tSTART_TIME\tTERMINATE_TIME\tLOG_PATH" > "$output_file"
+mkdir -p logs
+output_file="logs/job_summary.tsv"
+completed_list="logs/completed_list.txt"
+echo -e "DATASET\tCOMPLETED\tSTART_TIME\tTERMINATE_TIME\tLOG_PATH\tERROR_PATH" > "$output_file"
 : > "$completed_list"
 
 # Loop through output*.log files
@@ -44,7 +45,7 @@ for output_log in $LOGDIR/output*.log; do
     fi
 
     # Write results to output file
-    echo -e "${dataset}\t${completed}\t${start_time}\t${terminate_time}\t${output_log}" >> "$output_file"
+    echo -e "${dataset}\t${completed}\t${start_time}\t${terminate_time}\t${output_log}\t${error_log}" >> "$output_file"
 done
 
 echo "Parsing complete. Results written to $output_file. Completed list is in $completed_list"
