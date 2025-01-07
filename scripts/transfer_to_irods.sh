@@ -25,7 +25,7 @@ TRACKING_FILE="${dataset}_tracking.txt"
 if [[ -f $TRACKING_FILE ]]; then
     echo "$TRACKING_FILE exists. Continuing loading..."
 else
-    echo -e "dataset\tfilepath\tirodspath\tmd5" > "$TRACKING_FILE"
+    echo -e "dataset\tfilepath\tirodspath\tmd5_local\tmd5_irods\tstatus" > "$TRACKING_FILE"
 fi
 
 # Find all files in the source directory and process
@@ -45,9 +45,19 @@ do
         irods_dir=$(dirname "$irods_path")
         imkdir -p "$irods_dir"
         iput -K -N 0 -f -X $dataset.restart.txt --retries 10 --metadata="series;${dataset};;md5;${md5};;" "$file" "$irods_path" > /dev/null
+        
+        # Calculate md5 on irods
+        irods_md5=$(ichksum "$irods_path" | awk '{print $NF}')
 
+        # Compare calculated checksum with the provided one
+        if [[ "$md5" == "$irods_md5" ]]; then
+            status="MATCH"
+        else
+            status="MISMATCH"
+        fi
+        
         # Write details to tracking file
-        echo -e "$dataset\t$file\t$irods_path\t$md5" >> "$TRACKING_FILE"
+        echo -e "$dataset\t$file\t$irods_path\t$md5\t$irods_md5\t$status" >> "$TRACKING_FILE"
     fi
 done < "$FILELIST"
 
