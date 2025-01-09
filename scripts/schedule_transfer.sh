@@ -20,4 +20,5 @@ do
     cd "${workdir}/${dataset}"
     cp $bsub_script .
     bsub -env "all, SOURCE=$source, TARGET=$target" -J "reprocess_to_irods.$dataset" < transfer_with_meta.bsub
+    cd -
 done < "$dataset_list"
