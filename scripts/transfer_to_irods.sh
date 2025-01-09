@@ -46,6 +46,8 @@ do
         imkdir -p "$irods_dir"
         iput -K -N 0 -f -X $dataset.restart.txt --retries 10 --metadata="series;${dataset};;md5;${md5};;" "$file" "$irods_path" > /dev/null
         
+        sleep 5
+
         # Calculate md5 on irods
         irods_md5=$(ichksum "$irods_path" | awk '{print $NF}')
 
