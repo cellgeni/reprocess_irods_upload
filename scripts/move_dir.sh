@@ -10,6 +10,9 @@ fi
 good_dirs_list=$1
 target_dir="/lustre/scratch127/cellgen/cellgeni/reprocessing-datasets-project/irods"
 
+# Add newline at the end if needed
+sed -i -e '$a\' $good_dirs_list
+
 # Create the target directory if it doesn't exist
 mkdir -p "$target_dir"
 
