@@ -15,6 +15,7 @@ DB_METAFILE_SUFFIXES = [".idf.txt", ".sdrf.txt", "_family.soft"]
 INFORMATIVE_COLUMNS = [
     "meta_exist",
     "db_meta_exist",
+    "missing_runs_samples",
     "all samples have runs",
     "all runs in run.list",
     "all samples in sample.list",
@@ -44,7 +45,7 @@ ADDITIONAL_COLUMNS = [
 
 MUST_BE_TRUE_COLUMNS = [
     "meta_exist",
-    "missing_runs_smaples",
+    "missing_runs_samples",
     "all runs in run.list",
     "all samples in sample.list",
     "all runs in parsed.list",
@@ -135,6 +136,9 @@ def get_datasets(args):
     if args.dirlist:
         with open(args.dirlist, "r") as file:
             dataset_paths = [path.rstrip() for path in file.readlines()]
+        if len(dataset_paths) == 0:
+            print("No datasets found in the list")
+            sys.exit()
     else:
         dataset_paths = glob.glob(f"{args.source.rstrip('/')}/*")
         # get valid dataset names
@@ -218,7 +222,7 @@ def check_sample_x_run_file(checklist, filepath):
         key for key, value in sample_to_run.items() if value is None
     ]
     checklist["all samples have runs"] = not samples_with_lost_runs
-    checklist["missing_runs_smaples"] = (
+    checklist["missing_runs_samples"] = (
         ",".join(samples_with_lost_runs) if samples_with_lost_runs else None
     )
     return sample_to_run

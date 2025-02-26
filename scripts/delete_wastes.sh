@@ -17,3 +17,9 @@ for dir in "$base_dir"/*/; do
         echo "Deleted: $dir/done_wget"
     fi
 done
+
+# Delete logs and other txt files
+find $base_dir -wholename '*wget-log' -exec rm -f {} +
+find $base_dir -type f -wholename '*.sh' -exec rm -f {} +
+find $base_dir -type f -wholename '*.pl' -exec rm -f {} +
+find $base_dir -type f -wholename '*.bsub.*' -exec rm -f {} +
