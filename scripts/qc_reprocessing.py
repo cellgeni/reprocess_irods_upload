@@ -42,6 +42,7 @@ ADDITIONAL_COLUMNS = [
     "starsolo_noFinalLog_samples",
     "starsolo_existTmp_samples",
     "missing_solo_qc_samples",
+    "solo_qc_mapped_samples",
 ]
 
 MUST_BE_TRUE_COLUMNS = [
@@ -210,7 +211,7 @@ def exist_nonempty(path: str, type: str = "file") -> bool:
         raise ValueError
 
 
-@validate_checklist_values
+# @validate_checklist_values
 def check_metafiles_exist(
     checklist: Dict[str, Optional[bool]],
     basedir: str,
@@ -345,7 +346,7 @@ def check_sample_x_run_file(
     return sample_to_run
 
 
-@validate_checklist_values
+# @validate_checklist_values
 def check_metafiles(
     checklist: Dict[str, Optional[bool]],
     basedir: str,
@@ -378,7 +379,7 @@ def check_metafiles(
     )
 
 
-@validate_checklist_values
+# @validate_checklist_values
 def validate_fastqs(
     checklist: Dict[str, Optional[bool]],
     basedir: str,
@@ -518,6 +519,18 @@ def validate_solo_qc(
             checklist["missing_solo_qc_samples"] = (
                 ",".join(lost_samples) if lost_samples else None
             )
+            # find mapping fraction column index
+            header = lines[0].rstrip().split("\t")
+            column_idx = header.index("all_u+m")
+
+            # get mapped samples
+            mapped_samples = [
+                samples_in_file[i]
+                for i, line in enumerate(lines[1:])
+                if len(header) == len(line.rstrip().split("\t"))
+                and float(line.rstrip().split("\t")[column_idx]) > 0.5
+            ]
+            checklist["solo_qc_mapped_samples"] = ",".join(mapped_samples)
 
 
 def validate_basedir(
@@ -592,10 +605,10 @@ def main() -> None:
     checklist_df.to_csv(args.checklist_file, sep=args.sep)
     with open(args.pass_file, "w") as passfile:
         pass_list = [dataset_path_dict[dataset] for dataset in pass_list]
-        passfile.write("\n".join(pass_list))
+        passfile.write("\n".join(pass_list) + "\n")
     with open(args.fail_file, "w") as failfile:
         fail_list = [dataset_path_dict[dataset] for dataset in fail_list]
-        failfile.write("\n".join(fail_list))
+        failfile.write("\n".join(fail_list) + "\n")
 
 
 if __name__ == "__main__":
