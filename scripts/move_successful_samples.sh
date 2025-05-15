@@ -36,8 +36,8 @@ while IFS=$'\t' read -r SAMPLE DATASET DIR; do
   echo "Moved $sample_dir to $target_dataset_dir/"
 
   # Check if exists _SRATtmp directory and notify user if it does
-  if [[ -d "$sample_dir/_SRATtmp" ]]; then
-    echo "Warning: _SRATtmp directory exists in for SAMPLE=$SAMPLE, DATASET=$DATASET. Please check."
+  if [[ -d "$sample_dir/_STARtmp" ]]; then
+    echo "WARNING: _SRATtmp directory exists in for SAMPLE=$SAMPLE, DATASET=$DATASET. Please check."
   fi
 
   # Copy family.soft, sdrf, idf, project.list files if they exist and were not already copied
