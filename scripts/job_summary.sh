@@ -12,20 +12,20 @@ LOGDIR=$1
 mkdir -p logs
 output_file="logs/job_summary.tsv"
 completed_list="logs/completed_list.txt"
-echo -e "DATASET\tCOMPLETED\tSTART_TIME\tTERMINATE_TIME\tLOG_PATH\tERROR_PATH" > "$output_file"
-: > "$completed_list"
+echo -e "DATASET\tCOMPLETED\tSTART_TIME\tTERMINATE_TIME\tLOG_PATH\tERROR_PATH" >"$output_file"
+: >"$completed_list"
 
 # Loop through output*.log files
 for output_log in $LOGDIR/output*.log; do
     # Extract job ID from file name
-    job_id=$(basename $output_log | grep -oP '\d+')
-    
+    job_id=$(basename $output_log | grep -oP '\d+\.\d+')
+
     # Check if file exists
     if [[ -f "$output_log" ]]; then
         # Extract Start and Terminate times
         start_time=$(grep -oP "Started at \K.*" "$output_log")
         terminate_time=$(grep -oP "Terminated at \K.*" "$output_log")
-        
+
         # Check completion status
         completed=$(grep -q "Successfully completed." "$output_log" && echo "Yes" || echo "No")
     fi
@@ -38,14 +38,14 @@ for output_log in $LOGDIR/output*.log; do
         if [[ -n $start_time && -d "$LOGDIR/$dataset" ]]; then
             echo "Copying logs to $dataset folder"
             cp $output_log $error_log "$LOGDIR/$dataset"
-            echo "$LOGDIR/$dataset" >> "$completed_list"
+            echo "$LOGDIR/$dataset" >>"$completed_list"
         fi
     else
         dataset="Unknown"
     fi
 
     # Write results to output file
-    echo -e "${dataset}\t${completed}\t${start_time}\t${terminate_time}\t${output_log}\t${error_log}" >> "$output_file"
+    echo -e "${dataset}\t${completed}\t${start_time}\t${terminate_time}\t${output_log}\t${error_log}" >>"$output_file"
 done
 
 echo "Parsing complete. Results written to $output_file. Completed list is in $completed_list"

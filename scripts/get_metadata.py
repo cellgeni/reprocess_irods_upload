@@ -119,7 +119,11 @@ def get_solo_qc_meta(solo_qc_file: str, sep="\t") -> Dict[str, Dict]:
         lines = [line.rstrip().split(sep) for line in file.readlines()]
         # convert to Dict[sample, meta]
         meta = {line[0]: solo_qc_row_to_meta(header, line) for line in lines}
-    return meta
+        # filter out failed samples
+        meta_filtered = {
+            key: value for key, value in meta.items() if value["Rd_all"].isdigit()
+        }
+    return meta_filtered
 
 
 def write_meta(
