@@ -1,0 +1,20 @@
+#BSUB -G cellgeni
+#BSUB -q "transfer"
+#BSUB -n 1
+#BSUB -M 4GB
+#BSUB -J "move_successful_samples"
+#BSUB -R "select[mem>4GB] rusage[mem=4GB]"
+#BSUB -o "samplesOutput%J.log"
+#BSUB -e "samplesError%J.log"
+
+# Exit on errors
+set -e
+
+# Input arguments
+input="$INPUT"
+
+# Set script PATHS
+script=/lustre/scratch127/cellgen/cellgeni/aljes/reprocess/scripts/move_successful_samples.sh
+
+# Run script
+$script "$INPUT"
