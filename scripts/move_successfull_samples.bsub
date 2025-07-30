@@ -4,8 +4,8 @@
 #BSUB -M 4GB
 #BSUB -J "move_successful_samples"
 #BSUB -R "select[mem>4GB] rusage[mem=4GB]"
-#BSUB -o "samplesOutput%J.log"
-#BSUB -e "samplesError%J.log"
+#BSUB -o "movesamplesOutput%J.log"
+#BSUB -e "movesamplesError%J.log"
 
 # Exit on errors
 set -e
@@ -14,7 +14,7 @@ set -e
 input="$INPUT"
 
 # Set script PATHS
-script=/lustre/scratch127/cellgen/cellgeni/aljes/reprocess/scripts/move_successful_samples.sh
+script=/lustre/scratch127/cellgen/cellgeni/aljes/reprocessing/scripts/move_successful_samples.sh
 
 # Run script
 $script "$INPUT"

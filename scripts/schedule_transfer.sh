@@ -10,7 +10,7 @@ target=/archive/cellgeni/datasets
 dataset_list=$1
 
 workdir=$2
-bsub_script=/lustre/scratch127/cellgen/cellgeni/aljes/reprocess/scripts/transfer_with_meta.bsub
+bsub_script=/lustre/scratch127/cellgen/cellgeni/aljes/reprocessing/scripts/transfer_with_meta.bsub
 
 # Get the number of datasets to transfer
 NUM=$(wc -l <"$dataset_list")

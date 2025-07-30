@@ -1,8 +1,8 @@
 #!/bin/bash
 
-qc_script_path=/lustre/scratch127/cellgen/cellgeni/aljes/reprocess/reprocess_public_10x/scripts/solo_QC.sh
+qc_script_path=/lustre/scratch127/cellgen/cellgeni/aljes/reprocessing/reprocess_public_10x/scripts/solo_QC.sh
 
-basedir=/lustre/scratch127/cellgen/cellgeni/aljes/reprocess/reprocessing-datasets-project/
+basedir=/lustre/scratch127/cellgen/cellgeni/aljes/reprocessing/reprocessing-datasets-project/
 
 cd $basedir
 for dataset in $( echo E-MTAB* GSE*  PRJNA* SDY* )

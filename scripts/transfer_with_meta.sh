@@ -14,9 +14,9 @@ SOURCE_DIR="${1%/}"
 IRODS_TARGET_DIR="${2%/}"
 
 # Set script PATHS
-get_meta_script=/lustre/scratch127/cellgen/cellgeni/aljes/reprocess/scripts/get_metadata.py
-transfer_script=/lustre/scratch127/cellgen/cellgeni/aljes/reprocess/scripts/transfer_to_irods.sh
-add_meta_script=/lustre/scratch127/cellgen/cellgeni/aljes/reprocess/scripts/add_meta.sh
+get_meta_script=/lustre/scratch127/cellgen/cellgeni/aljes/reprocessing/scripts/get_metadata.py
+transfer_script=/lustre/scratch127/cellgen/cellgeni/aljes/reprocessing/scripts/transfer_to_irods.sh
+add_meta_script=/lustre/scratch127/cellgen/cellgeni/aljes/reprocessing/scripts/add_meta.sh
 
 # Set output dir
 outputdir=metadata

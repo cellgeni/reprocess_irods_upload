@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define paths
-filelist="/lustre/scratch127/cellgen/cellgeni/aljes/reprocess/duplicated.txt"
+filelist="/lustre/scratch127/cellgen/cellgeni/aljes/reprocessing/duplicated.txt"
 
 # Read each directory from the list and move it
 while IFS= read -r dir; do

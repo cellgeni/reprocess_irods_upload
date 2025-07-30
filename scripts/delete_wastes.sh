@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the base directory for good datasets
-base_dir="/lustre/scratch127/cellgen/cellgeni/reprocessing-datasets-project/irods"
+base_dir=$1
 
 # Iterate through all subdirectories in the base directory
 for dir in "$base_dir"/*/; do

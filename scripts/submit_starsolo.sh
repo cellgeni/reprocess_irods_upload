@@ -7,7 +7,7 @@ if [ "$#" -ne 1 ]; then
 fi
 
 INPUT_FILE=$1
-SCRIPT=/lustre/scratch127/cellgen/cellgeni/aljes/reprocess/scripts/starsolo.bsub
+SCRIPT=/lustre/scratch127/cellgen/cellgeni/aljes/reprocessing/scripts/starsolo.bsub
 truncate -s 0 finished.tsv
 truncate -s 0 runlist.txt
 
