@@ -11,7 +11,7 @@ SCRIPT=/lustre/scratch127/cellgen/cellgeni/aljes/reprocessing/scripts/reprocess.
 truncate -s 0 finished.tsv
 truncate -s 0 runlist.txt
 
-while IFS=$'\t' read -r DATASET SPECIE NUM_ALL NUM_10X SAMPLES; do
+while IFS=$'\t' read -r DATASET SAMPLES; do
   # write subset list to file
   echo $SAMPLES | tr ',' '\n' >"${DATASET}_subset.txt"
 
