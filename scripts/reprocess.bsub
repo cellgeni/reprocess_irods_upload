@@ -11,5 +11,5 @@ mapfile -t dataset_list <$ENV_DATASET_LIST
 DATASET="${dataset_list[$LSB_JOBINDEX - 1]}"
 SUBSET="${DATASET}_subset.txt"
 
-/lustre/scratch127/cellgen/cellgeni/aljes/reprocess/reprocess_public_10x/reprocess_public_10x.sh "$DATASET" "$SUBSET"
+/lustre/scratch127/cellgen/cellgeni/aljes/reprocessing/reprocess_public_10x/reprocess_public_10x.sh "$DATASET" "$SUBSET"
 rm "$SUBSET"
