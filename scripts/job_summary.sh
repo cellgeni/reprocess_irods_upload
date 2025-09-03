@@ -15,8 +15,8 @@ completed_list="logs/completed_list.txt"
 echo -e "DATASET\tCOMPLETED\tSTART_TIME\tTERMINATE_TIME\tLOG_PATH\tERROR_PATH" >"$output_file"
 : >"$completed_list"
 
-# Loop through output*.log files
-for output_log in $LOGDIR/output*.log; do
+# Loop through reprocessOutput*.log files
+for output_log in $LOGDIR/reprocessOutput*.log; do
     # Extract job ID from file name
     job_id=$(basename $output_log | grep -oP '\d+\.\d+')
 
@@ -31,7 +31,7 @@ for output_log in $LOGDIR/output*.log; do
     fi
 
     # Corresponding error log
-    error_log="$LOGDIR/error${job_id}.log"
+    error_log="$LOGDIR/reprocessError${job_id}.log"
     if [[ -f "$error_log" ]]; then
         # Extract dataset name from error log
         dataset=$(grep -oP "Using file \K[^ ]*_subset\.txt" "$error_log" | sed 's/_subset\.txt//')
