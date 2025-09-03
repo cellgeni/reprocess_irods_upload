@@ -5,7 +5,7 @@ from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
 # Load env variables
-load_dotenv("/lustre/scratch127/cellgen/cellgeni/aljes/reprocess/slack_bot/.env")
+load_dotenv("/lustre/scratch127/cellgen/cellgeni/aljes/reprocessing/slack_bot/.env")
 
 # parser
 parser = argparse.ArgumentParser(description="Process arguments.")
