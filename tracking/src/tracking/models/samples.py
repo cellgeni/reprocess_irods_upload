@@ -2,8 +2,7 @@
 
 from sqlalchemy import Column, Integer, String, Boolean, Enum, DateTime, func
 from sqlalchemy.dialects.postgresql import ENUM
-from sqlalchemy.orm import DeclarativeBase
-import enum
+from sqlalchemy.orm import DeclarativeBase, Session
 
 
 class Base(DeclarativeBase):

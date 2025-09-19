@@ -2,8 +2,11 @@ import os
 import argparse
 import logging
 from dotenv import load_dotenv
+from tracking.update import update_samples
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 load_dotenv()
@@ -87,5 +90,9 @@ def main() -> None:
 
     # Run update command if specified
     if args.command == "update":
-        print(f"Updating database at {args.db_url} with data from {args.path}")
-        print(f"Input format: {args.format}, Batch size: {args.batch_size}")
+        update_samples(
+            path=args.path,
+            fmt=args.format,
+            batch_size=args.batch_size,
+            dry_run=args.dry_run,
+        )
