@@ -1,6 +1,7 @@
 import os
 import argparse
 from dotenv import load_dotenv
+from typing import List
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
@@ -19,7 +20,7 @@ CHANNEL_ID = os.getenv(
 )  # Replace with the channel ID where you want to send the message
 
 
-def reformat_status(status: str, total_number: int, used: str, quote: str) -> str:
+def reformat_status(status: str, total_number: int, memory: List[str]) -> str:
     if status == "No datasets found in the list":
         formated_status = f"✅*PASS:* 0\n❌*FAIL:* 0\n:among_us_hammer:*PROCESSED:* 0\n:bird_run:*LEFT:* {total_number - 1}"
     else:
@@ -28,7 +29,11 @@ def reformat_status(status: str, total_number: int, used: str, quote: str) -> st
             x.split(":")[0].strip(" "): x.split(":")[1].strip(" ") for x in status
         }
         left = total_number - int(status["ALL"]) - 1
-        formated_status = f"✅*PASS:* {status['PASS']}\n❌*FAIL:* {status['FAIL']}\n:among_us_hammer:*PROCESSED:* {status['ALL']}\n:bird_run:*LEFT:* {left}\n:writing_hand:*MEM:* {used}/{quote}"
+        memory = [
+            f":writing_hand:*{scratch.upper()}:* {used}/{quote}\n"
+            for scratch, used, quote in memory
+        ]
+        formated_status = f"✅*PASS:* {status['PASS']}\n❌*FAIL:* {status['FAIL']}\n:among_us_hammer:*PROCESSED:* {status['ALL']}\n:bird_run:*LEFT:* {left}\n{''.join(memory)}"
     return formated_status
 
 
@@ -36,8 +41,8 @@ def read_results(file: str) -> str:
     with open(file, "r") as file:
         status = file.readline().rstrip()
         total_number = int(file.readline().split(" ")[0])
-        used, quote = file.readline().rstrip().split(" ")
-    return reformat_status(status, total_number, used, quote)
+        memory = [file.readline().rstrip().split(" ") for _ in range(3)]
+    return reformat_status(status, total_number, memory)
 
 
 def send_daily_message(status_file: str):
