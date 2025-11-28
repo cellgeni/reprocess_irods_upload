@@ -2,7 +2,9 @@ import os
 import argparse
 import logging
 from dotenv import load_dotenv
+from irods.session import iRODSSession
 from tracking.update import update_samples
+from tracking.irods import load_collection_from_irods, validate_collection, load_schema_from_file, log_validation_report
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -21,6 +23,23 @@ def init_parser() -> argparse.ArgumentParser:
 
     # Add subparsers for different commands
     subparsers = parser.add_subparsers(dest="command", required=True)
+
+    # Subparser for schema validation
+    irods_validate_parser = subparsers.add_parser(
+        "irods-validate", help="Validate iRODS collections against a schema"
+    )
+    irods_validate_parser.add_argument(
+        "collection", type=str, help="Path to the iRODS collection to validate"
+    )
+    irods_validate_parser.add_argument(
+        "schema", type=str, help="Path to the schema file (YAML or JSON)"
+    )
+    irods_validate_parser.add_argument(
+        "--timeout",
+        type=int,
+        default=120,
+        help="Connection timeout for iRODS session (default: 120 seconds)",
+    )
 
     # Subparser for update command
     update_parser = subparsers.add_parser("update", help="Update the tracking database")
@@ -89,10 +108,23 @@ def main() -> None:
     args = parser.parse_args()
 
     # Run update command if specified
-    if args.command == "update":
-        update_samples(
-            path=args.path,
-            fmt=args.format,
-            batch_size=args.batch_size,
-            dry_run=args.dry_run,
-        )
+    match args.command:
+        case "update":
+            update_samples(
+                path=args.path,
+                fmt=args.format,
+                batch_size=args.batch_size,
+                dry_run=args.dry_run,
+            )
+        case "irods-validate":
+            # Load schema
+            schema = load_schema_from_file(args.schema)
+
+            # Validate collection
+            env_file = os.environ.get("IRODS_ENVIRONMENT_FILE")
+            with iRODSSession(irods_env_file=env_file) as session:
+                session.connection_timeout = args.timeout
+                collection = load_collection_from_irods(session, args.collection)
+                report = validate_collection(collection, schema)
+            # Log validation report
+            log_validation_report(report)
