@@ -1,0 +1,3 @@
+[submodule "slack_bot"]
+	path = slack_bot
+	url = https://github.com/cellgeni/reprocessing_slack_bot
